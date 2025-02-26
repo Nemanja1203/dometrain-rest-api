@@ -8,6 +8,7 @@ public static class ApplicationServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        //services.AddSingleton<IMovieRepository, MovieRepositoryInMemory>();
         services.AddSingleton<IMovieRepository, MovieRepository>();
         return services;
     }
@@ -15,7 +16,7 @@ public static class ApplicationServiceCollectionExtensions
     public static IServiceCollection AddDatabase(this IServiceCollection services,
         string connectionString)
     {
-        // NOTE: This is singleton masking transient
+        // NOTE: This is singleton masking transient, because new db connection is created every time
         services.AddSingleton<IDbConnectionFactory>(_ =>
             new NpgsqlConnectionFactory(connectionString));
         services.AddSingleton<DbInitializer>();
