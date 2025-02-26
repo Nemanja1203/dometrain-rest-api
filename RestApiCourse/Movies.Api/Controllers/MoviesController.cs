@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+﻿using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Mapping;
-using Movies.Application.Models;
-using Movies.Application.Repositories;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
 
@@ -28,11 +24,11 @@ public class MoviesController : ControllerBase
         await _movieService.CreateAsync(movie);
         //return Ok(movie);
         //return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie.MapToResponse());
-        return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie.MapToResponse());
+        return CreatedAtAction(nameof(GetAsync), new { idOrSlug = movie.Id }, movie.MapToResponse());
     }
 
     [HttpGet(ApiEndpoints.Movies.Get)]
-    public async Task<IActionResult> Get([FromRoute] string idOrSlug)
+    public async Task<IActionResult> GetAsync([FromRoute] string idOrSlug)
     {
         //var movie = await _movieRepository.GetByIdAsync(id);
         var movie = Guid.TryParse(idOrSlug, out Guid id)
@@ -48,7 +44,7 @@ public class MoviesController : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Movies.GetAll)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllAsync()
     {
         var movies = await _movieService.GetAllAsync();
         var moviesResponse = movies.MapToResponse();
@@ -56,7 +52,7 @@ public class MoviesController : ControllerBase
     }
 
     [HttpPut(ApiEndpoints.Movies.Update)]
-    public async Task<IActionResult> Update(
+    public async Task<IActionResult> UpdateAsync(
         [FromRoute] Guid id,
         [FromBody] UpdateMovieRequest request)
     {
@@ -72,10 +68,10 @@ public class MoviesController : ControllerBase
     }
 
     [HttpDelete(ApiEndpoints.Movies.Delete)]
-    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
     {
         var deleted = await _movieService.DeleteByIdAsync(id);
-        if(!deleted)
+        if (!deleted)
         {
             return NotFound();
         }
