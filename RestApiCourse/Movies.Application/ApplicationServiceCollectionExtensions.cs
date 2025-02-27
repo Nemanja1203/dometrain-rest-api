@@ -12,8 +12,11 @@ public static class ApplicationServiceCollectionExtensions
     {
         //services.AddSingleton<IMovieRepository, MovieRepositoryInMemory>();
         services.AddSingleton<IMovieRepository, MovieRepository>();
-        services.AddSingleton<IRatingRepository, RatingRepository>();
         services.AddSingleton<IMovieService, MovieService>(); // Doesn't have any state so that is why it can be singleton
+        
+        services.AddSingleton<IRatingService, RatingService>();
+        services.AddSingleton<IRatingRepository, RatingRepository>();
+        
         services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
         return services;
     }
