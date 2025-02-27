@@ -18,7 +18,7 @@ public class MoviesController : ControllerBase
         _movieService = movieService;
     }
 
-    [Authorize(AuthConstants.AdminUserPolicyName)]
+    [Authorize(AuthConstants.TrustedMemberPolicyName)]
     //[HttpPost("movies")]
     [HttpPost(ApiEndpoints.Movies.Create)]
     public async Task<IActionResult> CreateAsync(
@@ -58,7 +58,7 @@ public class MoviesController : ControllerBase
         return Ok(moviesResponse);
     }
 
-    [Authorize(AuthConstants.AdminUserPolicyName)]
+    [Authorize(AuthConstants.TrustedMemberPolicyName)]
     [HttpPut(ApiEndpoints.Movies.Update)]
     public async Task<IActionResult> UpdateAsync(
         [FromRoute] Guid id,
