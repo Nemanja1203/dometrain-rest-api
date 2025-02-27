@@ -27,7 +27,7 @@ public class RatingRepository : IRatingRepository
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
         return await connection.QuerySingleOrDefaultAsync<(float?, int?)>(new CommandDefinition("""
-            select round(avg(r.rating), 1)
+            select round(avg(r.rating), 1),
                 (select rating
                 from ratings
                 where movieid = @movieId

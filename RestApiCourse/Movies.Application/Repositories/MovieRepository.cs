@@ -48,7 +48,7 @@ public class MovieRepository : IMovieRepository
                 select m.*, round(avg(r.rating), 1) as rating, myr.rating as userrating
                 from movies m
                 left join ratings r on m.id = r.movieid
-                left join rating myr on m.id = myr.movieid
+                left join ratings myr on m.id = myr.movieid
                     and myr.userid = @userId
                 where id = @id
                 group by id, myr.rating
@@ -82,9 +82,9 @@ public class MovieRepository : IMovieRepository
                 select m.*, round(avg(r.rating), 1) as rating, myr.rating as userrating
                 from movies m
                 left join ratings r on m.id = r.movieid
-                left join rating myr on m.id = myr.movieid
+                left join ratings myr on m.id = myr.movieid
                     and myr.userid = @userId
-                where slut = @slug
+                where slug = @slug
                 group by id, myr.rating
                 """, new { slug, userId }, cancellationToken: token));
 
@@ -142,7 +142,9 @@ public class MovieRepository : IMovieRepository
         using var transaction = connection.BeginTransaction();
 
         await connection.ExecuteAsync(new CommandDefinition("""
-            delete from genres where movieid = @id
+            delete 
+            from genres 
+            where movieid = @id
             """, new { id = movie.Id }, cancellationToken: token));
 
         foreach (var genre in movie.Genres)
@@ -156,6 +158,7 @@ public class MovieRepository : IMovieRepository
         var result = await connection.ExecuteAsync(new CommandDefinition("""
             update movies 
             set slug = @Slug, title = @Title, yearofrelease = @YearOfRelease
+            where id = @id
             """, movie, cancellationToken: token));
 
         transaction.Commit();
