@@ -52,4 +52,9 @@ public class MovieRepositoryInMemory : IMovieRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task<int> GetCountAsync(string? title, int? yearOfRelease, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
 }
