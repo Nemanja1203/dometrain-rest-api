@@ -31,19 +31,54 @@ public class MoviesController : ControllerBase
         await _movieService.CreateAsync(movie, token);
         //return Ok(movie);
         //return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie.MapToResponse());
-        return CreatedAtAction(nameof(GetAsync), new { idOrSlug = movie.Id }, movie.MapToResponse());
+        // return CreatedAtAction(nameof(GetAsync), new { idOrSlug = movie.Id }, movie.MapToResponse());
+        return CreatedAtAction(nameof(GetAsyncById), "Movies",new { idOrSlug = movie.Id.ToString() }, movie.MapToResponse());
     }
 
+    // [HttpGet(ApiEndpoints.Movies.Get)]
+    // public async Task<IActionResult> GetAsync(
+    //     [FromRoute] string idOrSlug,
+    //     CancellationToken token)
+    // {
+    //     var userId = HttpContext.GetUserId();
+    //     //var movie = await _movieRepository.GetByIdAsync(id);
+    //     var movie = Guid.TryParse(idOrSlug, out Guid id)
+    //         ? await _movieService.GetByIdAsync(id, userId, token)
+    //         : await _movieService.GetBySlugAsync(idOrSlug, userId, token);
+    //     if (movie is null)
+    //     {
+    //         return NotFound();
+    //     }
+    //
+    //     var response = movie.MapToResponse();
+    //     return Ok(response);
+    // }
+    
     [HttpGet(ApiEndpoints.Movies.Get)]
-    public async Task<IActionResult> GetAsync(
+    public async Task<IActionResult> GetAsyncById(
+        [FromRoute] Guid idOrSlug,
+        CancellationToken token)
+    {
+        var userId = HttpContext.GetUserId();
+        //var movie = await _movieRepository.GetByIdAsync(id);
+        var movie = await _movieService.GetByIdAsync(idOrSlug, userId, token);
+        if (movie is null)
+        {
+            return NotFound();
+        }
+
+        var response = movie.MapToResponse();
+        return Ok(response);
+    }
+    
+    [HttpGet(ApiEndpoints.Movies.Get)]
+    public async Task<IActionResult> GetAsyncBySlug(
         [FromRoute] string idOrSlug,
         CancellationToken token)
     {
         var userId = HttpContext.GetUserId();
         //var movie = await _movieRepository.GetByIdAsync(id);
-        var movie = Guid.TryParse(idOrSlug, out Guid id)
-            ? await _movieService.GetByIdAsync(id, userId, token)
-            : await _movieService.GetBySlugAsync(idOrSlug, userId, token);
+        var movie = await _movieService.GetBySlugAsync(idOrSlug, userId, token);
         if (movie is null)
         {
             return NotFound();
