@@ -24,7 +24,7 @@ public class MovieRepositoryInMemory : IMovieRepository
         return Task.FromResult(movie);
     }
 
-    public Task<IEnumerable<Movie>> GetAllAsync(Guid? userId = default, CancellationToken token = default)
+    public Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, CancellationToken token = default)
     {
         return Task.FromResult(_movies.AsEnumerable());
     }
