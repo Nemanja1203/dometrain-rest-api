@@ -27,7 +27,8 @@ public class MoviesController : ControllerBase
         _outputCache = outputCache;
     }
 
-    [Authorize(AuthConstants.TrustedMemberPolicyName)]
+    //[Authorize(AuthConstants.TrustedMemberPolicyName)]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
     //[HttpPost("movies")]
     [HttpPost(ApiEndpoints.Movies.Create)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
