@@ -28,7 +28,7 @@ public class MoviesController : ControllerBase
     [HttpPost(ApiEndpoints.Movies.Create)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateAsync(
+    public async Task<IActionResult> Create(
         [FromBody] CreateMovieRequest request,
         CancellationToken token)
     {
@@ -37,11 +37,12 @@ public class MoviesController : ControllerBase
         //return Ok(movie);
         //return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie.MapToResponse());
         // return CreatedAtAction(nameof(GetAsync), new { idOrSlug = movie.Id }, movie.MapToResponse());
-        return CreatedAtAction(nameof(Get),new { idOrSlug = movie.Id }, movie.MapToResponse());
+        return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie.MapToResponse());
     }
 
     // [ApiVersion(1.0, Deprecated = true)]
     [HttpGet(ApiEndpoints.Movies.Get)]
+    [ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(
@@ -57,12 +58,16 @@ public class MoviesController : ControllerBase
         {
             return NotFound();
         }
-    
+
         var response = movie.MapToResponse();
         return Ok(response);
     }
 
     [HttpGet(ApiEndpoints.Movies.GetAll)]
+    [ResponseCache(Duration = 30,
+        VaryByQueryKeys = new[] { "title", "year", "sortBy", "page", "pageSize" },
+        VaryByHeader = "Accept, Accept-Encoding",
+        Location = ResponseCacheLocation.Any)]
     [ProducesResponseType(typeof(MoviesResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(
         [FromQuery] GetAllMoviesRequest request,
@@ -71,10 +76,10 @@ public class MoviesController : ControllerBase
         var userId = HttpContext.GetUserId();
         var options = request.MapToOptions()
             .WithUser(userId);
-        
+
         var movies = await _movieService.GetAllAsync(options, token);
         var moviesCount = await _movieService.GetCountAsync(options.Title, options.YearOfRelease, token);
-        
+
         var moviesResponse = movies.MapToResponse(request.Page, request.PageSize, moviesCount);
         return Ok(moviesResponse);
     }
