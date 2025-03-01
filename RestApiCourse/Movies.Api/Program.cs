@@ -56,6 +56,15 @@ builder.Services.AddApiVersioning(x =>
 }).AddMvc().AddApiExplorer();
 
 // builder.Services.AddResponseCaching();
+builder.Services.AddOutputCache(x =>
+{
+    x.AddBasePolicy(c => c.Cache());
+    x.AddPolicy("MovieCache", c => 
+        c.Cache()
+        .Expire(TimeSpan.FromMinutes(1))
+        .SetVaryByQuery(new []{"title", "year", "sortBy", "page", "pageSize"})
+        .Tag("movies"));
+});
 
 builder.Services.AddControllers();
 
@@ -97,6 +106,13 @@ app.UseAuthorization();
 
 //app.UseCors(); // Cors needs to be before response caching
 // app.UseResponseCaching();
+
+// Output Cache Defaults:
+// - only 200 OK is cached
+// - only GET and HEAD are cached
+// - responses that set cookies are not cached
+// - responses to authenticated requests are not cached
+app.UseOutputCache(); 
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();
