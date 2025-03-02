@@ -58,7 +58,8 @@ public static class GetAllMoviesEndpoint
             .Produces<MoviesResponse>(StatusCodes.Status200OK)
             .WithName($"{Name}V2")
             .WithApiVersionSet(ApiVersioning.VersionSet)
-            .HasApiVersion(2.0);
+            .HasApiVersion(2.0)
+            .CacheOutput("MovieCache");
 
         return app;
     }
