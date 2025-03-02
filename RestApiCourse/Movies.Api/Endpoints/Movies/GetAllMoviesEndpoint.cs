@@ -2,6 +2,7 @@
 using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
+using Movies.Contracts.Responses;
 
 namespace Movies.Api.Endpoints.Movies;
 
@@ -11,7 +12,7 @@ public static class GetAllMoviesEndpoint
 
     public static IEndpointRouteBuilder MapGetAllMovies(this IEndpointRouteBuilder app)
     {
-        app.MapPost(ApiEndpoints.Movies.GetAll, async (
+        app.MapGet(ApiEndpoints.Movies.GetAll, async (
                 [AsParameters] GetAllMoviesRequest request,
                 IMovieService movieService,
                 HttpContext context,
@@ -30,6 +31,7 @@ public static class GetAllMoviesEndpoint
                     moviesCount);
                 return TypedResults.Ok(moviesResponse);
             })
+            .Produces<MoviesResponse>(StatusCodes.Status200OK)
             .WithName(Name);
 
         return app;
