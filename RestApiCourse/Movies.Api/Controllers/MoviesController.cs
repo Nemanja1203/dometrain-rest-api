@@ -40,10 +40,11 @@ public class MoviesController : ControllerBase
         var movie = request.MapToMovie();
         await _movieService.CreateAsync(movie, token);
         await _outputCache.EvictByTagAsync("movies", token);
+        var response = movie.MapToResponse();
         //return Ok(movie);
-        //return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie.MapToResponse());
-        // return CreatedAtAction(nameof(GetAsync), new { idOrSlug = movie.Id }, movie.MapToResponse());
-        return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie.MapToResponse());
+        //return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", response);
+        // return CreatedAtAction(nameof(GetAsync), new { idOrSlug = movie.Id }, response);
+        return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, response);
     }
 
     // [ApiVersion(1.0, Deprecated = true)]
@@ -86,7 +87,8 @@ public class MoviesController : ControllerBase
         var movies = await _movieService.GetAllAsync(options, token);
         var moviesCount = await _movieService.GetCountAsync(options.Title, options.YearOfRelease, token);
 
-        var moviesResponse = movies.MapToResponse(request.Page, request.PageSize, moviesCount);
+        var moviesResponse = movies.MapToResponse(request.Page.GetValueOrDefault(PagedRequest.DefaultPage),
+            request.PageSize.GetValueOrDefault(PagedRequest.DefaultPageSize), moviesCount);
         return Ok(moviesResponse);
     }
 
