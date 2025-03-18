@@ -15,6 +15,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
+// TODO: (nm) Set serilog as default logging framework
+
 // Add services to the container.
 
 builder.Services.AddAuthentication(x =>
@@ -28,7 +30,7 @@ builder.Services.AddAuthentication(x =>
     {
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(config["Jwt:Key"]!)),
-        ValidateIssuerSigningKey = true,
+        ValidateIssuerSigningKey = true, // This is the main thing, without it nothing will be validated
         ValidateLifetime = true,
         ValidateIssuer = true,
         ValidIssuer = config["Jwt:Issuer"],
@@ -39,8 +41,12 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddAuthorization(x =>
 {
+    // Role based
+    // x.AddPolicy("AdminRole", p => p.RequireRole("Admin"));
+    
     // x.AddPolicy(AuthConstants.AdminUserPolicyName,
     //     p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
+    
     x.AddPolicy(AuthConstants.AdminUserPolicyName,
         p => p.AddRequirements(new AdminAuthRequirement(config["ApiKey"]!)));
     x.AddPolicy(AuthConstants.TrustedMemberPolicyName,
@@ -62,7 +68,8 @@ builder.Services.AddApiVersioning(x =>
 
 builder.Services.AddEndpointsApiExplorer();
 
-// builder.Services.AddResponseCaching();
+// builder.Services.AddResponseCaching(); // Response caching - caching on client side
+// TODO: (nm) Make output caching use Redis
 builder.Services.AddOutputCache(x =>
 {
     x.AddBasePolicy(c => c.Cache());
@@ -70,7 +77,7 @@ builder.Services.AddOutputCache(x =>
         c.Cache()
         .Expire(TimeSpan.FromMinutes(1))
         .SetVaryByQuery(new []{"title", "year", "sortBy", "page", "pageSize"})
-        .Tag("movies"));
+        .Tag("movies")); // Tag is important as it allows us to do cache invalidation
 });
 
 // builder.Services.AddControllers();
@@ -123,7 +130,7 @@ app.UseAuthorization();
 // - responses to authenticated requests are not cached
 app.UseOutputCache(); 
 
-app.UseMiddleware<ValidationMappingMiddleware>();
+app.UseMiddleware<ValidationMappingMiddleware>(); // Add before Controllers/ApiEndpoints
 // app.MapControllers();
 app.MapApiEndpoints();
 

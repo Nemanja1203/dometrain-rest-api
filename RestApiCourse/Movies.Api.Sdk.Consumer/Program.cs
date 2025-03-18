@@ -9,7 +9,7 @@ using Refit;
 
 var services = new ServiceCollection();
 
-// This should be an extension method in the SDK to make user experience smooth
+// This whole section should be an extension method in the SDK to make user experience smooth
 // or provided in documentation
 services
     .AddHttpClient()

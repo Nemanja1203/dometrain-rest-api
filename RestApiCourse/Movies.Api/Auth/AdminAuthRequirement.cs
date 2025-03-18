@@ -23,6 +23,7 @@ public class AdminAuthRequirement :  IAuthorizationHandler, IAuthorizationRequir
         var httpContext = context.Resource as HttpContext;
         if (httpContext is null)
         {
+            // TODO: (nm) Do we need call to Context.Fail() here?
             return Task.CompletedTask;
         }
         
@@ -39,7 +40,8 @@ public class AdminAuthRequirement :  IAuthorizationHandler, IAuthorizationRequir
         }
         
         var identity = (ClaimsIdentity)httpContext.User.Identity!;
-        // This should not be hardcoded
+        // This should not be hardcoded!!! This is GUID that we are connecting to userid claim that represents machine and not real user
+        // Attaching identity to api key
         identity.AddClaim(new Claim("userid", Guid.Parse("188fa74c-5427-4393-8a60-f2f9a8b94ce4").ToString()));
         context.Succeed(this);
         return Task.CompletedTask;

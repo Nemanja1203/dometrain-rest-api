@@ -3,7 +3,7 @@
 // Note: This file is copied from Movies.Api
 public static class ApiEndpoints
 {
-    private const string ApiBase = "/api"; // Note: Slash has beed added in fron of 'api'
+    private const string ApiBase = "/api"; // Note: Slash has been added in front of 'api'
 
     public static class Movies
     {

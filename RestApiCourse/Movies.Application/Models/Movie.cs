@@ -19,7 +19,7 @@ public partial class Movie
         return $"{sluggedTitle}-{YearOfRelease}";
     }
 
-    // This way regex will be faster
+    // Source generate reges - This way regex will be faster
     [GeneratedRegex("[^0-9A-Za-z _-]", RegexOptions.NonBacktracking, 5)]
     private static partial Regex SlugRegex();
 }
