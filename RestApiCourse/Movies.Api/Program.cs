@@ -76,7 +76,7 @@ builder.Services.AddOutputCache(x =>
     x.AddPolicy("MovieCache", c => 
         c.Cache()
         .Expire(TimeSpan.FromMinutes(1))
-        .SetVaryByQuery(new []{"title", "year", "sortBy", "page", "pageSize"})
+        .SetVaryByQuery(["title", "year", "sortBy", "page", "pageSize"])
         .Tag("movies")); // Tag is important as it allows us to do cache invalidation
 });
 
